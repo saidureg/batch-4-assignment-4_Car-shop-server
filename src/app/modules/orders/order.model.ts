@@ -8,16 +8,20 @@ const orderSchema = new Schema<IOrder>(
       ref: 'User',
       required: true,
     },
-    car: {
-      type: Schema.Types.ObjectId,
-      ref: 'Car',
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: [1, 'Quantity must be a positive number'],
-    },
+    cars: [
+      {
+        car: {
+          type: Schema.Types.ObjectId,
+          ref: 'Car',
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: [1, 'Quantity must be a positive number'],
+        },
+      },
+    ],
     totalPrice: {
       type: Number,
       required: true,
@@ -28,9 +32,14 @@ const orderSchema = new Schema<IOrder>(
       enum: ['Pending', 'Processing', 'Shipped', 'Delivered'],
       default: 'Pending',
     },
-    estimatedDelivery: {
-      type: String,
-      required: true,
+    transaction: {
+      id: String,
+      transactionStatus: String,
+      bank_status: String,
+      sp_code: String,
+      sp_message: String,
+      method: String,
+      date_time: String,
     },
   },
   { timestamps: true },

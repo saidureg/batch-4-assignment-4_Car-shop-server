@@ -4,7 +4,7 @@ A professional RESTful API built to manage car inventory, orders, and revenue ca
 
 ## _🚀 Live Demo_
 
-<!-- Access the live API [Here](https://batch-4-assignment-2-car-store.vercel.app/) -->
+Access the live API [Here](https://car-shop-backend-sooty.vercel.app/)
 
 ## Features
 
@@ -20,6 +20,7 @@ A professional RESTful API built to manage car inventory, orders, and revenue ca
 2. **Order Management**
 
 - Create new orders for purchasing cars.
+- Make payment 
 - Calculate revenue from orders
 
 ## _🔧 Tech Stack_

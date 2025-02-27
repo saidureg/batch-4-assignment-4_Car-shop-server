@@ -1,9 +1,19 @@
 import AppError from '../../errors/AppError';
 import CarModel from '../cars/car.model';
+import { IUser } from '../User/user.interface';
 import { IOrder } from './order.interface';
 import OrderModel from './order.model';
 
-const createOrderIntoDB = async (orderData: IOrder): Promise<IOrder> => {
+const createOrderIntoDB = async (
+  user: IUser,
+  payload: { product: string; quantity: number },
+  client_ip: string,
+) => {
+  if (!payload?.products?.length)
+    throw new AppError(403, 'Order is not specified');
+
+  const products = payload.products;
+
   const car = await CarModel.findById(orderData.car);
   if (!car) {
     throw new AppError(404, 'Car not found');
@@ -19,7 +29,33 @@ const createOrderIntoDB = async (orderData: IOrder): Promise<IOrder> => {
   }
   await car.save();
 
-  return await OrderModel.create(orderData);
+  let order = await OrderModel.create(orderData);
+
+  // payment integration
+  const shurjopayPayload = {
+    amount: totalPrice,
+    order_id: order._id,
+    currency: 'BDT',
+    customer_name: user.name,
+    customer_address: user.address,
+    customer_email: user.email,
+    customer_phone: user.phone,
+    customer_city: user.city,
+    client_ip,
+  };
+
+  const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
+
+  if (payment?.transactionStatus) {
+    order = await order.updateOne({
+      transaction: {
+        id: payment.sp_order_id,
+        transactionStatus: payment.transactionStatus,
+      },
+    });
+  }
+
+  return payment.checkout_url;
 };
 
 const getAllOrdersFromDB = async (): Promise<IOrder[]> => {
@@ -62,6 +98,36 @@ const deleteOrderByIdFromDB = async (id: string) => {
   return { message: 'Order deleted successfully' };
 };
 
+const verifyPayment = async (order_id: string) => {
+  const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
+
+  if (verifiedPayment.length) {
+    await Order.findOneAndUpdate(
+      {
+        'transaction.id': order_id,
+      },
+      {
+        'transaction.bank_status': verifiedPayment[0].bank_status,
+        'transaction.sp_code': verifiedPayment[0].sp_code,
+        'transaction.sp_message': verifiedPayment[0].sp_message,
+        'transaction.transactionStatus': verifiedPayment[0].transaction_status,
+        'transaction.method': verifiedPayment[0].method,
+        'transaction.date_time': verifiedPayment[0].date_time,
+        status:
+          verifiedPayment[0].bank_status == 'Success'
+            ? 'Paid'
+            : verifiedPayment[0].bank_status == 'Failed'
+              ? 'Pending'
+              : verifiedPayment[0].bank_status == 'Cancel'
+                ? 'Cancelled'
+                : '',
+      },
+    );
+  }
+
+  return verifiedPayment;
+};
+
 const calculateRevenue = async (): Promise<number> => {
   const revenue = await OrderModel.aggregate([
     {
@@ -81,4 +147,5 @@ export const orderService = {
   updateOrderByIdFromDB,
   deleteOrderByIdFromDB,
   calculateRevenue,
+  verifyPayment,
 };

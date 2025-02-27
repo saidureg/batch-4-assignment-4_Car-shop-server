@@ -3,9 +3,9 @@ import { orderService } from './order.service';
 import catchAsync from '../../utils/catchAsync';
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
-  const orderData = req.body;
+  const user = req.user;
 
-  const order = await orderService.createOrderIntoDB(orderData);
+  const order = await orderService.createOrderIntoDB(user, req.body, req.ip!);
 
   res.status(201).json({
     success: true,
@@ -65,6 +65,17 @@ const deleteOrderById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const verifyPayment = catchAsync(async (req, res) => {
+  const order = await orderService.verifyPayment(req.query.order_id as string);
+
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+    message: 'Order verified successfully',
+    data: order,
+  });
+});
+
 const calculateRevenue = async (req: Request, res: Response) => {
   try {
     const totalRevenue = await orderService.calculateRevenue();
@@ -96,4 +107,5 @@ export const orderController = {
   updateOrderById,
   deleteOrderById,
   calculateRevenue,
+  verifyPayment,
 };

@@ -27,6 +27,8 @@ router.delete(
   orderController.deleteOrderById,
 );
 
+router.get('/verify-payment', orderController.verifyPayment);
+
 router.get('/revenue', orderController.calculateRevenue);
 
 export const orderRoutes = router;
