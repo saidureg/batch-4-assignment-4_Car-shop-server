@@ -12,7 +12,12 @@ const app: Application = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'http://localhost:5174', credentials: true }));
+app.use(
+  cors({
+    origin: 'https://batch-4-assignment-4-car-shop-client.vercel.app',
+    credentials: true,
+  }),
+);
 
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
