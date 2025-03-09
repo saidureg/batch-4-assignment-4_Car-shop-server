@@ -2,45 +2,60 @@ import AppError from '../../errors/AppError';
 import CarModel from '../cars/car.model';
 import { IUser } from '../User/user.interface';
 import { IOrder } from './order.interface';
-import OrderModel from './order.model';
+import Order from './order.model';
+import { orderUtils } from './order.utils';
 
 const createOrderIntoDB = async (
   user: IUser,
-  payload: { product: string; quantity: number },
+  payload: IOrder,
   client_ip: string,
 ) => {
-  if (!payload?.products?.length)
-    throw new AppError(403, 'Order is not specified');
+  if (!payload?.car) throw new AppError(403, 'Order is not specified');
 
-  const products = payload.products;
+  const cars = payload.car;
+  let totalPrice = 0;
 
-  const car = await CarModel.findById(orderData.car);
+  const car = await CarModel.findById(payload.car);
   if (!car) {
     throw new AppError(404, 'Car not found');
   }
 
-  if (car.quantity < orderData.quantity) {
+  if (car.quantity < payload.quantity || !car.inStock) {
     throw new AppError(400, 'Not enough stock');
   }
 
-  car.quantity -= orderData.quantity;
+  car.quantity -= payload.quantity;
   if (car.quantity === 0) {
     car.inStock = false;
   }
+
+  if (payload.quantity > 1) {
+    totalPrice = car.price * payload.quantity;
+  } else {
+    totalPrice = car.price;
+  }
   await car.save();
 
-  let order = await OrderModel.create(orderData);
+  let order = await Order.create({
+    user: user.id,
+    car: cars,
+    totalPrice,
+    quantity: payload.quantity,
+    estimatedDelivery:
+      payload.estimatedDelivery ||
+      new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+  });
 
   // payment integration
   const shurjopayPayload = {
-    amount: totalPrice,
+    amount: order.totalPrice,
     order_id: order._id,
     currency: 'BDT',
     customer_name: user.name,
-    customer_address: user.address,
+    customer_address: 'Dhaka',
     customer_email: user.email,
-    customer_phone: user.phone,
-    customer_city: user.city,
+    customer_phone: '01700000000',
+    customer_city: 'Dhaka',
     client_ip,
   };
 
@@ -56,46 +71,6 @@ const createOrderIntoDB = async (
   }
 
   return payment.checkout_url;
-};
-
-const getAllOrdersFromDB = async (): Promise<IOrder[]> => {
-  return await OrderModel.find().populate('user').populate('car');
-};
-
-const getOrdersByUserId = async (
-  userId: string,
-  loggedInUserId: string,
-): Promise<IOrder[]> => {
-  if (userId !== loggedInUserId) {
-    throw new AppError(403, 'Unauthorized access');
-  }
-  return await OrderModel.find({ user: userId }).populate('car');
-};
-
-const updateOrderByIdFromDB = async (
-  id: string,
-  payload: Partial<IOrder>,
-): Promise<IOrder | null> => {
-  const order = await OrderModel.findById(id);
-  if (!order) {
-    throw new AppError(404, 'Order not found');
-  }
-
-  return await OrderModel.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  });
-};
-
-const deleteOrderByIdFromDB = async (id: string) => {
-  const order = await OrderModel.findById(id);
-  if (!order) {
-    throw new AppError(404, 'Order not found');
-  }
-
-  await OrderModel.findByIdAndDelete(id);
-
-  return { message: 'Order deleted successfully' };
 };
 
 const verifyPayment = async (order_id: string) => {
@@ -122,14 +97,57 @@ const verifyPayment = async (order_id: string) => {
                 ? 'Cancelled'
                 : '',
       },
+      { new: true },
     );
+  } else {
+    throw new AppError(400, 'Payment verification failed');
   }
 
   return verifiedPayment;
 };
 
+const getAllOrdersFromDB = async (): Promise<IOrder[]> => {
+  return await Order.find().populate('user').populate('car');
+};
+
+const getOrdersByUserId = async (
+  userId: string,
+  loggedInUserId: string,
+): Promise<IOrder[]> => {
+  if (userId !== loggedInUserId) {
+    throw new AppError(403, 'Unauthorized access');
+  }
+  return await Order.find({ user: userId }).populate('car');
+};
+
+const updateOrderByIdFromDB = async (
+  id: string,
+  payload: Partial<IOrder>,
+): Promise<IOrder | null> => {
+  const order = await Order.findById(id);
+  if (!order) {
+    throw new AppError(404, 'Order not found');
+  }
+
+  return await Order.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+};
+
+const deleteOrderByIdFromDB = async (id: string) => {
+  const order = await Order.findById(id);
+  if (!order) {
+    throw new AppError(404, 'Order not found');
+  }
+
+  await Order.findByIdAndDelete(id);
+
+  return { message: 'Order deleted successfully' };
+};
+
 const calculateRevenue = async (): Promise<number> => {
-  const revenue = await OrderModel.aggregate([
+  const revenue = await Order.aggregate([
     {
       $group: {
         _id: null,

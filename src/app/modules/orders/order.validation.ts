@@ -7,7 +7,8 @@ const orderValidationSchema = z.object({
     .refine((id) => mongoose.Types.ObjectId.isValid(id), {
       message: 'Invalid user ID',
     })
-    .transform((id) => new mongoose.Types.ObjectId(id)),
+    .transform((id) => new mongoose.Types.ObjectId(id))
+    .optional(),
   car: z
     .string({ required_error: 'Car ID is required' })
     .refine((id) => mongoose.Types.ObjectId.isValid(id), {
@@ -15,13 +16,17 @@ const orderValidationSchema = z.object({
     })
     .transform((id) => new mongoose.Types.ObjectId(id)),
   quantity: z.number().int().positive('Quantity must be a positive number'),
-  totalPrice: z.number().positive('Total price must be a positive number'),
+  totalPrice: z
+    .number()
+    .positive('Total price must be a positive number')
+    .optional(),
   status: z
     .enum(['Pending', 'Processing', 'Shipped', 'Delivered'])
     .default('Pending'),
-  estimatedDelivery: z.string({
-    required_error: 'Estimated delivery date is required',
-  }),
+  estimatedDelivery: z
+    .string()
+    .optional()
+    .default(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()),
 });
 
 const orderUpdateValidationSchema = z.object({

@@ -8,20 +8,16 @@ const orderSchema = new Schema<IOrder>(
       ref: 'User',
       required: true,
     },
-    cars: [
-      {
-        car: {
-          type: Schema.Types.ObjectId,
-          ref: 'Car',
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          min: [1, 'Quantity must be a positive number'],
-        },
-      },
-    ],
+    car: {
+      type: Schema.Types.ObjectId,
+      ref: 'Car',
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: [1, 'Quantity must be greater than 0'],
+    },
     totalPrice: {
       type: Number,
       required: true,
@@ -41,10 +37,14 @@ const orderSchema = new Schema<IOrder>(
       method: String,
       date_time: String,
     },
+    estimatedDelivery: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );
 
-const OrderModel = model<IOrder>('Order', orderSchema);
+const Order = model<IOrder>('Order', orderSchema);
 
-export default OrderModel;
+export default Order;

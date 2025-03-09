@@ -20,6 +20,11 @@ const carSchema = new Schema<ICar>(
       required: true,
       min: [1000, 'Year must be a positive number'],
     },
+    CC: {
+      type: Number,
+      required: true,
+      min: [0, 'CC must be a positive number'],
+    },
     price: {
       type: Number,
       required: true,
@@ -32,12 +37,34 @@ const carSchema = new Schema<ICar>(
     },
     description: {
       type: String,
-      required: true,
     },
     quantity: {
       type: Number,
       required: true,
       min: [0, 'Quantity must be a positive number'],
+    },
+    location: {
+      type: String,
+    },
+    Mileage: {
+      type: Number,
+      min: [0, 'Mileage must be a positive number'],
+    },
+    image: {
+      type: [String],
+      required: true,
+    },
+    AC: {
+      type: Boolean,
+    },
+    PST: {
+      type: Boolean,
+    },
+    MG: {
+      type: Boolean,
+    },
+    CNG: {
+      type: Boolean,
     },
     inStock: {
       type: Boolean,

@@ -2,10 +2,7 @@ import { Types } from 'mongoose';
 
 export interface IOrder {
   user: Types.ObjectId;
-  cars: {
-    car: Types.ObjectId;
-    quantity: number;
-  }[];
+  car: Types.ObjectId;
   quantity: number;
   totalPrice: number;
   status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered';
@@ -18,6 +15,5 @@ export interface IOrder {
     method: string;
     date_time: string;
   };
-  createdAt?: Date;
-  updatedAt?: Date;
+  estimatedDelivery: string;
 }

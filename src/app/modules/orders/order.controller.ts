@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { orderService } from './order.service';
 import catchAsync from '../../utils/catchAsync';
+import { IUser } from '../User/user.interface';
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user;
-
+  const user = req.user as IUser;
   const order = await orderService.createOrderIntoDB(user, req.body, req.ip!);
 
   res.status(201).json({
