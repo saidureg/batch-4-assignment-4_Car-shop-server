@@ -8,10 +8,12 @@ import { adminController } from './admin.controller';
 const router = express.Router();
 
 router.patch(
-  '/users/:userId/block',
+  '/:userId/block',
   auth(USER_ROLE.admin),
   validateRequest(userValidations.updateUserValidationSchema),
   adminController.blockUser,
 );
+
+router.delete('/:userId', auth(USER_ROLE.admin), adminController.deleteUser);
 
 export const adminRoutes = router;

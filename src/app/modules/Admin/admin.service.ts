@@ -1,7 +1,7 @@
 import AppError from '../../errors/AppError';
 import { User } from '../User/user.model';
 
-const blockUser = async (userId: string) => {
+const blockUserService = async (userId: string) => {
   const user = await User.findOne({ _id: userId, isBlocked: false }).lean();
 
   if (!user) {
@@ -20,6 +20,19 @@ const blockUser = async (userId: string) => {
   return { message: 'User blocked successfully' };
 };
 
+const deleteUserFromDB = async (userId: string) => {
+  const user = await User.findOne({ _id: userId }).lean();
+
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  await User.findByIdAndDelete(userId);
+
+  return { message: 'User deleted successfully' };
+};
+
 export const adminServices = {
-  blockUser,
+  blockUserService,
+  deleteUserFromDB,
 };

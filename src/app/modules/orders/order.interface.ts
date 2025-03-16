@@ -5,7 +5,7 @@ export interface IOrder {
   car: Types.ObjectId;
   quantity: number;
   totalPrice: number;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered';
+  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
   transaction: {
     id: string;
     transactionStatus: string;

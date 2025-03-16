@@ -21,7 +21,7 @@ const orderValidationSchema = z.object({
     .positive('Total price must be a positive number')
     .optional(),
   status: z
-    .enum(['Pending', 'Processing', 'Shipped', 'Delivered'])
+    .enum(['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'])
     .default('Pending'),
   estimatedDelivery: z
     .string()
@@ -53,7 +53,9 @@ const orderUpdateValidationSchema = z.object({
     .number()
     .positive('Total price must be a positive number')
     .optional(),
-  status: z.enum(['Pending', 'Processing', 'Shipped', 'Delivered']).optional(),
+  status: z
+    .enum(['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'])
+    .optional(),
   estimatedDelivery: z
     .string({ required_error: 'Estimated delivery date is required' })
     .optional(),

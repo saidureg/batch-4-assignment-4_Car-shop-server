@@ -19,11 +19,6 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await authServices.loginUser(req.body);
 
-  // res.cookie('token', result.token, {
-  //   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-  //   httpOnly: true,
-  // });
-
   res.status(200).json({
     success: true,
     message: 'Login successful',
@@ -34,7 +29,19 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const result = await authServices.changePassword(req.user, req.body);
+
+  res.status(200).json({
+    success: true,
+    message: 'Password changed successfully',
+    statusCode: 200,
+    data: result,
+  });
+});
+
 export const authController = {
   createUser,
   loginUser,
+  changePassword,
 };

@@ -90,7 +90,7 @@ const verifyPayment = async (order_id: string) => {
         'transaction.date_time': verifiedPayment[0].date_time,
         status:
           verifiedPayment[0].bank_status == 'Success'
-            ? 'Paid'
+            ? 'Processing'
             : verifiedPayment[0].bank_status == 'Failed'
               ? 'Pending'
               : verifiedPayment[0].bank_status == 'Cancel'
