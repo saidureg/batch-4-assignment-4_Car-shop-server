@@ -15,7 +15,11 @@ app.use(cookieParser());
 app.use(
   cors({
     // origin: 'https://batch-4-assignment-4-car-shop-client.vercel.app',
-    origin: 'http://localhost:5173',
+    origin: [
+      'http://localhost:5173',
+      'http://192.168.68.55:5173',
+      'https://batch-4-assignment-4-car-shop-client.vercel.app',
+    ],
     credentials: true,
   }),
 );
