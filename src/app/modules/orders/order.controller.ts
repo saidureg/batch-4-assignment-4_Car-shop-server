@@ -76,36 +76,11 @@ const verifyPayment = catchAsync(async (req, res) => {
   });
 });
 
-const calculateRevenue = async (req: Request, res: Response) => {
-  try {
-    const totalRevenue = await orderService.calculateRevenue();
-
-    res.status(200).json({
-      message: 'Revenue calculated successfully',
-      success: true,
-      data: {
-        totalRevenue,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Failed to calculate revenue',
-      success: false,
-      error,
-      stack:
-        (error as Error).stack?.match(/"message": "(.*?)"/g) +
-        ' ' +
-        (error as Error).stack?.split('[as error]')[1],
-    });
-  }
-};
-
 export const orderController = {
   createOrder,
   getAllOrders,
   getOrdersByUserId,
   updateOrderById,
   deleteOrderById,
-  calculateRevenue,
   verifyPayment,
 };

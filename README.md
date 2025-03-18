@@ -25,14 +25,53 @@ Access the live API [Here](https://car-shop-backend-sooty.vercel.app/)
 
 ## _🔧 Tech Stack_
 
+- _Frontend:_ React, Redux Toolkit, Ant Design, Tailwind CSS
 - _Backend:_ Node.js, Express.js
 - _Database:_ MongoDB with Mongoose
+- _Payment Integration:_ SurjoPay
 - _Validation:_ Zod for schema validation
+- _Authentication:_ JWT, bcrypt
 - _Environment:_ dotenv for secure configuration
+
+
 
 ## _🌟 API Endpoints_
 
-1. **Create a Car**
+## User
+
+1. **Register**
+
+- _URL:_ /api/auth/register
+- _Method:_ POST
+
+2. **Login**
+
+- _URL:_ /api/auth/login
+- _Method:_ POST
+
+3. **User Can Change Password**
+
+- _URL:_ /api/auth/change-password
+- _Method:_ POST
+
+4. **Admin Can See All Users**
+
+- _URL:_ /api/users
+- _Method:_ GET
+
+5. **Admin Block a User**
+
+- _URL:_ /api/admin/:userId/block
+- _Method:_ PATCH
+
+6. **Admin Delete a User**
+
+- _URL:_ /api/admin/:userId/block
+- _Method:_ DELETE/:userId
+
+## Cars
+
+1. **Admin Add Car**
 
 - _URL:_ /api/cars
 - _Method:_ POST
@@ -48,25 +87,47 @@ Access the live API [Here](https://car-shop-backend-sooty.vercel.app/)
 - _URL:_ /api/cars/:carId
 - _Method:_ GET
 
-4. **Update a Car**
+4. **Admin Update Car**
 
 - _URL:_ /api/cars/:carId
-- _Method:_ PUT
+- _Method:_ PATCH
 
-5. **Delete a Car**
+5. **Admin Delete Car**
 
 - _URL:_ /api/cars/:carId
 - _Method:_ DELETE
 
-6. **Place an Order**
+## Orders Related API
+
+1. **USer Place an Order**
 
 - _URL:_ /api/orders
 - _Method:_ POST
 
-7. **Calculate Revenue**
+2. **Admin See All Orders**
 
-- _URL:_ /api/orders/revenue
+- _URL:_ /api/orders
 - _Method:_ GET
+
+3. **User See his/her Orders**
+
+- _URL:_ /api/orders/:userId
+- _Method:_ GET
+
+4. **Payment Verify**
+
+- _URL:_ /api/orders/verify
+- _Method:_ GET
+
+5. **Admin Update Order**
+
+- _URL:_ /api/orders/:orderId
+- _Method:_ PATCH
+
+6. **Admin Delete Car**
+
+- _URL:_ /api/orders/:orderId
+- _Method:_ DELETE
 
 ## _Project Setup Guide_
 
@@ -112,11 +173,42 @@ Before starting, ensure the following are installed on your system:
      PORT=5000
      ```
 
-     and
-
      ```bash
      DATABASE_URL=mongodb://<Your Database URL>
      ```
+
+     ```bash
+     BCRYPT_SALT_ROUNDS=<Number> 
+     ```
+
+     ```bash
+     JWT_ACCESS_SECRET=<HashCode> 
+     ```
+
+     ```bash
+     JWT_ACCESS_EXPIRATION=<Time Frame> 
+     ```
+
+     ```bash
+      SP_ENDPOINT=https://sandbox.shurjopayment.com
+     ```
+
+     ```bash
+      SP_USERNAME=sp_sandbox
+     ```
+
+     ```bash
+      SP_PASSWORD=pyyk97hu&6u6
+     ```
+
+     ```bash
+      SP_PREFIX=SP
+     ```
+
+     ```bash
+      SP_RETURN_URL=http://localhost:5173/orders/verify
+     ```
+
 
 5. **Start the Development Server:**
 

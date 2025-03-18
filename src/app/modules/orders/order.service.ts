@@ -146,24 +146,11 @@ const deleteOrderByIdFromDB = async (id: string) => {
   return { message: 'Order deleted successfully' };
 };
 
-const calculateRevenue = async (): Promise<number> => {
-  const revenue = await Order.aggregate([
-    {
-      $group: {
-        _id: null,
-        totalRevenue: { $sum: '$totalPrice' },
-      },
-    },
-  ]);
-  return revenue[0]?.totalRevenue || 0;
-};
-
 export const orderService = {
   createOrderIntoDB,
   getAllOrdersFromDB,
   getOrdersByUserId,
   updateOrderByIdFromDB,
   deleteOrderByIdFromDB,
-  calculateRevenue,
   verifyPayment,
 };

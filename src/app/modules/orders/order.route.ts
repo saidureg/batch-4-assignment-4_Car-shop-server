@@ -28,6 +28,4 @@ router.delete(
   orderController.deleteOrderById,
 );
 
-router.get('/revenue', orderController.calculateRevenue);
-
 export const orderRoutes = router;
